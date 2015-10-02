@@ -118,15 +118,12 @@ class AssetManager extends EventDispatcher
 	public function start()
 	{
 		var files:Array<String> = URLS.copy();
-		getAssetFiles(files);
+		getAssetFiles();
 	}
 
-	private function getAssetFiles(files:Array<Dynamic>):Void
+	private function getAssetFiles():Void
 	{
-		var file:Dynamic = files.pop();
-
-		trace("GETTING FILE: " + file);
-		getAssetFile(file, function(res:Dynamic) {
+		getAssetFile("http://d1geib4acjj2ck.cloudfront.net/tars/150.tar", function(res:Dynamic) {
 			if (res.err != null)
 			{
 				trace("Asset download error - CODE: " + res.code + 
@@ -134,9 +131,9 @@ class AssetManager extends EventDispatcher
 				return;
 			}
 
-			trace("DOWNLOADED FILE: " + file);
+			trace("DOWNLOADED FILE");
 
-			getAssetFiles(files);
+			getAssetFiles();
 		});
 	}
 
