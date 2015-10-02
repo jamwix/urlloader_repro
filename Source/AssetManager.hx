@@ -22,155 +22,111 @@ import JWRequest;
 class AssetManager extends EventDispatcher
 {
 	
-	private var _manifestMd5:String = null;
-	private var _configMd5:String = null;
-	private var _allowStart:Bool = true;
+	private static var URLS:Array<String> = [
+		"http://d1geib4acjj2ck.cloudfront.net/tars/190.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/189.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/188.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/187.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/186.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/185.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/184.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/183.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/182.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/181.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/180.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/179.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/178.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/177.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/176.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/175.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/174.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/173.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/100.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/101.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/102.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/103.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/104.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/105.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/106.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/107.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/108.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/109.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/110.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/111.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/112.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/113.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/114.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/115.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/116.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/117.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/118.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/119.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/120.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/121.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/122.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/123.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/124.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/125.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/126.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/127.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/128.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/129.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/130.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/131.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/132.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/133.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/134.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/135.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/136.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/137.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/138.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/139.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/140.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/141.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/142.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/143.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/156.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/157.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/158.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/159.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/160.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/161.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/162.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/163.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/164.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/165.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/166.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/167.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/168.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/169.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/170.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/171.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/172.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/150.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/151.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/152.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/153.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/154.tar",
+		"http://d1geib4acjj2ck.cloudfront.net/tars/155.tar",
+	];
 
 	public function new()
 	{
 		super();
-		_manifestMd5 = "beb5498ed61a9500b83449751a5f4de5";
 	}
 
-
-	private function readGzipString(bytes:Bytes):String
+	public function start()
 	{
-		var bytesInput:BytesInput = new BytesInput(bytes);
-		var bo:BytesOutput = new haxe.io.BytesOutput();
-		var reader:format.gz.Reader = new format.gz.Reader(bytesInput);
-
-		try
-		{
-			reader.readHeader();
-			reader.readData(bo);
-		}
-		catch (err:String)
-		{
-			trace("Unable to ungzip bytes");
-			return null;
-		}
-
-		if (bo == null)
-		{
-			trace("No output bytes from gzip read");
-			return null;
-		}
-
-		var strBytes:Bytes = bo.getBytes();
-		if (strBytes == null)
-		{
-			trace("Unable to get bytes from gzip bytesoutput");
-			return null;
-		}
-
-		var configStr:String = null;
-		try
-		{
-			configStr = strBytes.toString();	
-		}
-		catch(strErr:String)
-		{
-			trace("Unable to convert gzip bytes to string");
-			return null;
-		}
-
-		return configStr;
-	}
-
-	public function syncManifest(version:Int, url:String):Void
-	{
-		getManifest(url);
-	}
-
-	private function getManifest(url:String):Void
-	{
-		new JWRequest(url, URLRequestMethod.GET, URLLoaderDataFormat.BINARY, null,
-				      onManifestDownloaded); 
-	}
-
-	private function onManifestDownloaded(res:Dynamic):Void
-	{
-		if (res.err != null)
-		{
-			trace("Manifest download error - CODE: " + res.code + 
-				  " MSG: " + res.err);
-			return;
-		}
-
-		if (res.data == null)
-		{
-			trace("Manifest request returned no data");
-			return;
-		}
-
-		var manifestBytes:Bytes = res.data;
-		var manifestStr:String = readGzipString(manifestBytes);
-		if (manifestStr == null)
-		{
-			trace("Unable to ungzip manifest");
-			return;
-		}
-
-		var manifestMd5:String = Md5.encode(manifestStr);
-		if (manifestMd5 != _manifestMd5)
-		{
-			trace("Manifest MD5 mismatch. aborting.");
-			return;
-		}
-
-		var manifest:Dynamic = null;
-		try 
-		{
-			manifest = Json.parse(manifestStr);
-		}
-		catch (msg:String)
-		{
-			trace("Unable to parse manifest data: " + msg);
-			return;
-		}
-
-		if (!isManifestValid(manifest))
-		{
-			trace("Manifest is improperly formatted");
-			return;
-		}
-
-		var files:Array<Dynamic> = manifest.files;
-		//trace("MANIFEST FILES: " + files);
-		var filesCopy:Array<Dynamic> = files.copy();
-		getAssetFiles(filesCopy);
-	}
-
-	private function isManifestValid(manifest:Dynamic):Bool
-	{
-		if (manifest == null) return false;
-		if (manifest.version == null) return false;
-		if (manifest.files == null) return false;
-
-		var files:Array<Dynamic> = manifest.files;
-
-
-		for (file in files)
-		{
-			if (file.name == null) return false;
-			if (file.url == null) return false;
-		}
-
-		return true;
+		var files:Array<String> = URLS.copy();
+		getAssetFiles(files);
 	}
 
 	private function getAssetFiles(files:Array<Dynamic>):Void
 	{
-		if (files.length <= 0)
-		{
-			trace("No more assets to download. Asset sync complete.");
-			return;
-		}
-
 		var file:Dynamic = files.pop();
 
 		trace("GETTING FILE: " + file);
-		getAssetFile(file.url, function(res:Dynamic) {
+		getAssetFile(file, function(res:Dynamic) {
 			if (res.err != null)
 			{
 				trace("Asset download error - CODE: " + res.code + 
@@ -178,8 +134,7 @@ class AssetManager extends EventDispatcher
 				return;
 			}
 
-			trace("SENDING BYTES TO THREAD FOR: " + file);
-			var bytes:Bytes = res.data;
+			trace("DOWNLOADED FILE: " + file);
 
 			getAssetFiles(files);
 		});

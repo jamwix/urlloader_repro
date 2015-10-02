@@ -46,7 +46,7 @@ class Main extends Sprite {
 		addEventListener(Event.ENTER_FRAME, addBitmap);
 
 		var assets:AssetManager = new AssetManager();
-		assets.syncManifest(15, "http://d1geib4acjj2ck.cloudfront.net/manifests/manifest.15.json.gz");
+		assets.start();
 		//addBitmap();
 		//doRequest();
 	}
