@@ -7,9 +7,6 @@ import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
 
-import format.tar.Data;
-import format.tar.Reader;
-
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
@@ -21,8 +18,6 @@ import sys.FileSystem;
 import sys.io.File;
 
 import JWRequest;
-import JamThread;
-import ThreadManager;
 
 class AssetManager extends EventDispatcher
 {
@@ -30,14 +25,11 @@ class AssetManager extends EventDispatcher
 	private var _manifestMd5:String = null;
 	private var _configMd5:String = null;
 	private var _allowStart:Bool = true;
-	private var _saveThread:JamThread;
-	private var _threadManager:ThreadManager;
 
 	public function new()
 	{
 		super();
 		_manifestMd5 = "beb5498ed61a9500b83449751a5f4de5";
-		_threadManager = new ThreadManager();
 	}
 
 
@@ -87,22 +79,7 @@ class AssetManager extends EventDispatcher
 
 	public function syncManifest(version:Int, url:String):Void
 	{
-		_saveThread = _threadManager.spawn(assetSaver, updateDownloaded);
-
 		getManifest(url);
-	}
-
-	private function assetSaver(msg:Dynamic):Dynamic
-	{
-		var bytes:Bytes = msg.bytes;
-		var name:String = msg.name;
-		var url:String = msg.url;
-
-		var success:Bool = processAssetsFile(bytes);
-		if (success) return {name: name, url: url};
-		
-		trace("Unable to process asset file " + url + ". aborting");
-		return null;
 	}
 
 	private function getManifest(url:String):Void
@@ -192,7 +169,7 @@ class AssetManager extends EventDispatcher
 
 		var file:Dynamic = files.pop();
 
-		//trace("GETTING FILE: " + file);
+		trace("GETTING FILE: " + file);
 		getAssetFile(file.url, function(res:Dynamic) {
 			if (res.err != null)
 			{
@@ -201,99 +178,17 @@ class AssetManager extends EventDispatcher
 				return;
 			}
 
-			//trace("SENDING BYTES TO THREAD FOR: " + file);
+			trace("SENDING BYTES TO THREAD FOR: " + file);
 			var bytes:Bytes = res.data;
-			_saveThread.sendMessage({
-				bytes: bytes, 
-				name: file.name, 
-				url: file.url
-			});
 
 			getAssetFiles(files);
 		});
 	}
 
-	private function updateDownloaded(msg:Dynamic):Void
-	{
-		trace("MSG: " + msg);
-	}
-
 	public function getAssetFile(url:String, cb:Dynamic->Void):Void
 	{
+		trace("GETTING: " + url);
 		new JWRequest(url, URLRequestMethod.GET, URLLoaderDataFormat.BINARY, 
 				      null, cb); 
-	}
-
-	private function processAssetsFile(data:Bytes):Bool
-	{
-		//trace("PROCESSING FILE BYTES");
-		var storagePath:String = "/tmp/";
-		var reader:Reader = new Reader(data);
-		var files:List<Entry> = reader.read();
-
-		//trace("NUM FILES IN TAR: " + files.length);
-		var imgReg:EReg = ~/\.jpg|\.png/;
-		for (file in files)
-		{
-			//trace("PROCESSING FILE");
-			if (file != null)
-			{
-				var path:String = storagePath + file.fileName;
-				if (!imgReg.match(path) && file.fmod == 493)
-				{
-					//trace("MAKING DIR: " + path);
-					try 
-					{
-						FileSystem.createDirectory(path);
-					}
-					catch (msg:String)
-					{
-						trace("Unable to create directory " + path + ": " + 
-							  msg);
-						return false;
-					}
-				}
-				else
-				{
-					if (!saveBytesAtomic(path, file.data)) return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	public function saveBytesAtomic(path:String, bytes:Bytes):Bool
-	{
-		var pathReg:EReg = ~/.*\//;
-		if (pathReg.match(path))
-		{
-			var path:String = pathReg.matched(0);
-			FileSystem.createDirectory(path);
-		}
-		
-		try
-		{
-			sys.io.File.saveBytes(path + ".new", bytes);
-		}
-		catch (msg:String)
-		{
-			trace("Unable to save file " + path + ".new: " + 
-				  msg);
-			return false;
-		}
-
-		try
-		{
-			FileSystem.rename(path + ".new", path);
-		}
-		catch (msg:String)
-		{
-			trace("Unable to rename file " + path + ".new to " + 
-				  path + ": " + msg);
-			return false;
-		}
-
-		return true;
 	}
 }
