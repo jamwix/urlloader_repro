@@ -25,7 +25,7 @@ class AssetManager
 
 	private function getAssetFiles():Void
 	{
-		_loader.load(new URLRequest("http://d1geib4acjj2ck.cloudfront.net/tars/150.tar"));
+		_loader.load(new URLRequest("https://s3.amazonaws.com/cinemnb/tars/150.tar"));
 	}
 
 	private function onComplete(e:Event):Void
