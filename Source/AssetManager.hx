@@ -2,7 +2,6 @@ package;
 
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import openfl.net.URLLoaderDataFormat;
 import openfl.events.IOErrorEvent;
 import openfl.events.Event;
 
@@ -18,7 +17,6 @@ class AssetManager
 	public function start()
 	{
 		_loader = new URLLoader();
-		_loader.dataFormat = URLLoaderDataFormat.BINARY;
 		_loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
 		_loader.addEventListener(Event.COMPLETE, onComplete);
 
